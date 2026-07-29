@@ -58,4 +58,9 @@ public class BoundedStack {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'pop'");
     }
+
+    public BoundedStack copy() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'copy'");
+    }
     }
