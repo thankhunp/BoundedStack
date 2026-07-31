@@ -12,12 +12,6 @@ import java.util.Set;
  * ตัวอย่างการใช้งาน:
  * BoundedStack b = new BoundedStack(5);
  * b.push("Bohemian Rhapsody");
- * 
- * ค่านามธรรม (A): ลำดับของชุดข้อความ เช่น [แอปเปิ้ล, กล้วย, ส้ม]
- * 
- * ตัวอย่างการใช้งาน:
- * BoundedStack b = new BoundedStack();
- * b.puch("Bohemian Rhapsody");
  * b.push("Imagine");
  * System.out.println(b.size()); // 2
  */
@@ -68,11 +62,6 @@ public class BoundedStack {
     public BoundedStack(int capacity) {
         if (capacity < 0) {
             throw new IllegalArgumentException("capacity must be non-negative");
-     * @param capacity
-     */
-    public BoundedStack(int capacity){
-        if (capacity <= 0) {
-            throw new IllegalArgumentException("capacity must be positive");
         }
         this.elements = new ArrayList<>();
         this.capacity = capacity;
@@ -83,9 +72,6 @@ public class BoundedStack {
      * สร้าง stack จากรายการข้อความเริ่มต้น
      *
      * @param initial รายการชุดข้อความเริ่มต้น ไม่ซ้ำกัน
-     * สร้าง list จากชุดข้อความที่ผู้ใช้ให้มา
-     * 
-     * @param initial รายการชุดข้อความเริ่มต้น, ไม่ซ้ำกัน
      * @throws IllegalArgumentException ถ้า initial ผิดเงื่อนไข
      */
     public BoundedStack(List<String> initial) {
@@ -100,7 +86,6 @@ public class BoundedStack {
                 throw new IllegalArgumentException();
             }
             if (s.equals("")) {
-            if (s == "") {
                 throw new IllegalArgumentException();
             }
             if (!seen.add(s)) {
@@ -113,7 +98,6 @@ public class BoundedStack {
                 }
             }
         }
-
         this.elements = new ArrayList<>(initial);
         checkRep();
     }
@@ -126,20 +110,11 @@ public class BoundedStack {
      * @param information ข้อความต้องไม่เป็น null ไม่เป็นสตริงว่าง
      *                    และไม่ใช้อักขระพิเศษ
      * @return true ถ้าเพิ่มข้อความสำเร็จ, false ถ้าไม่สำเร็จ
-     // ===== Mutators =====
-
-    /**
-     * เพิ่มข้อความตำแหน่งสุดท้ายใน elements
-     * 
-     * @param information ข้อความ, ต้องไม่เป็น null ไม่เป็นสตริงว่าง
-     *                    ไม่เป็นอักษรพิเศษ
-     * @return true ถ้าเพิ่มข้อความสำเร็จ, false ถ้าเพิ่มข้อความไม่สำเร็จ
      * @throws IllegalArgumentException ถ้า information ผิดเงื่อนไข
      */
     public boolean push(String information) {
 
         if (information == null || information.equals("")) {
-        if (information == null || information == "") {
             throw new IllegalArgumentException();
         }
         for (int i = 0; i < information.length(); i++) {
@@ -151,10 +126,6 @@ public class BoundedStack {
         if (elements.size() >= capacity || elements.contains(information)) {
             return false;
         }
-        if (elements.size() == capacity || elements.size() > capacity || elements.contains(information)) {
-            return false;
-        }
-
         elements.add(information);
         checkRep();
         return true;
@@ -165,11 +136,6 @@ public class BoundedStack {
      *
      * @return ข้อความตัวบนสุด
      * @throws IndexOutOfBoundsException ถ้า stack ว่างอยู่
-     * ลบข้อความออกจากตำแหน่งสุดท้าย elements และ คืนข้อความตำแหน่งสุดท้าย
-     * 
-     * @return ข้อความตำแหน่งสุดท้าย
-     * @throws IndexOutOfBoundsException ถ้า เมื่อ elements ว่างอยู่
-     *                                   (ไม่มีสมาชิกเลย)
      */
     public String pop() {
         if (elements.isEmpty()) {
@@ -192,21 +158,6 @@ public class BoundedStack {
         return elements.size();
     }
 
-     // ===== Observers =====
-
-    /**
-     * คืนจำนวนชุดข้อความใน elements
-     * 
-     * @return จำนวนชุดข้อความใน elements
-     */
-    public int size() {
-        return elements.size();
-    }
-
-    public boolean isEmpty() {
-        return elements.isEmpty();
-    }
-
     /**
      * ตรวจสอบว่า stack ว่างหรือไม่
      * @return true ถ้า stack ว่าง
@@ -226,9 +177,6 @@ public class BoundedStack {
      * คืนค่าความจุสูงสุดของ stack
      *
      * @return ความจุสูงสุดของ stack
-     * คืนค่าความจุสูงสุดที่ใช้เก็บข้อความ
-     * 
-     * @return ความจุสูงสุดที่ใช้เก็บข้อความ
      */
     public int getCapacity() {
         return this.capacity;
@@ -243,16 +191,6 @@ public class BoundedStack {
     public String peek() {
         if (elements.isEmpty()) {
             throw new IllegalArgumentException("Stack is empty");
-     /**
-     * คืนข้อความตำแหน่งสุดท้าย
-     * 
-     * @return ข้อความตำแหน่งสุดท้าย
-     * @throws IndexOutOfBoundsException ถ้า เมื่อ elements ว่างอยู่
-     *                                   (ไม่มีสมาชิกเลย)
-     */
-    public String peek() {
-        if (elements.isEmpty()) {
-            throw new IndexOutOfBoundsException();
         }
         return elements.get(elements.size() - 1);
     }
@@ -293,40 +231,6 @@ public class BoundedStack {
      * คืน stack ใหม่ที่มีข้อความเดิมแต่สลับลำดับ
      *
      * @return stack ที่สลับลำดับแล้ว
-     * 
-     * @return รายการขชุดข้อความตามลำดับ
-     */
-    public List<String> getElements() {
-        return new ArrayList<>(elements);
-    }
-
-    /**
-     * ตรวจสอบว่ามีข้อความนี้อยู่ใน elements หรือไม่
-     * 
-     * @param information ข้อความ, ต้องไม่เป็น null ไม่เป็นสตริงว่าง
-     *                    ไม่เป็นอักษรพิเศษ
-     * @return true ถ้าพบข้อความ , false ถ้าไม่พบข้อความ
-     * @throws IllegalArgumentException ถ้า information ผิดเงื่อนไข
-     */
-    public boolean contains(String information) {
-        if (information == null) {
-            throw new IllegalArgumentException();
-        }
-        for (int i = 0; i < information.length(); i++) {
-            char c = information.charAt(i);
-            if (!Character.isLetterOrDigit(c) && c != ' ') {
-                throw new IllegalArgumentException();
-            }
-        }
-        return elements.contains(information);
-    }
-
-     // ===== Producer =====
-
-    /**
-     * คืนรายการข้อความใหม่ที่มีชุดข้อความเดิมแต่สลับลำดับ
-     *
-     * @return รายการชุดข้อความที่สลับลำดับแล้ว
      */
     public BoundedStack shuffled() {
         List<String> copy = new ArrayList<String>(elements);
