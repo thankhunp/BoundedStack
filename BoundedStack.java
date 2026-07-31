@@ -158,10 +158,17 @@ public class BoundedStack {
         return elements.size();
     }
 
+    /**
+     * ตรวจสอบว่า stack ว่างหรือไม่
+     * @return true ถ้า stack ว่าง
+     */
     public boolean isEmpty() {
         return elements.isEmpty();
     }
-
+    /**
+     * ตรวจสอบว่า stack เต็มหรือไม่
+     * @return true ถ้า stack เต็ม
+     */
     public boolean isFull() {
         return elements.size() == capacity;
     }

@@ -159,7 +159,7 @@ public class BoundedStackTest {
 
         // --Peek ต้องไม่ลบข้อมูลออกจาก Stack--
         int beforeSize = stack.size();
-        Object beforeTop = stack.peek();
+        String beforeTop = stack.peek();
         check("Peek does not change stack size", stack.size() == beforeSize);
         check("Peek does not remove the top element", stack.peek().equals(beforeTop));
 
