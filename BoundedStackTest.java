@@ -131,8 +131,7 @@ public class BoundedStackTest {
         check("Pop returns the top element", s.pop().equals("C"));
         check("Pop decreases size", s.size() == 2);
         check("Pop removes the returned element", !s.contains("C"));
-        check("Pop preserves the order ofremaining elements",
-                s.getElements().equals(Arrays.asList("A", "B")));
+        check("Pop preserves the order ofremaining elements", s.getElements().equals(Arrays.asList("A", "B")));
 
         // boundary: ลบจนหมด
         s.pop();
@@ -144,7 +143,7 @@ public class BoundedStackTest {
         } catch (IndexOutOfBoundsException e) {
             threwNull = true;
         }
-        check("Pop from empty stackthrows IndexOutOfBoundsException", threwNull);
+        check("Pop from empty stack throws IndexOutOfBoundsException", threwNull);
     }
 
     private static void testPeek() {
