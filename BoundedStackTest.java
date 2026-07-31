@@ -3,43 +3,44 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-
 /**
  * Test runner
  */
+
 public class BoundedStackTest {
 
     private static int passed = 0;
     private static int failed = 0;
 
-    /** helper กลาง - พิมพ์ PASS/FAIL และนับผล*/
+    /** helper กลาง — พิมพ์ PASS/FAIL และนับผลให้เอง */
     private static void check(String name, boolean condition) {
-        if(condition) {
+        if (condition) {
             passed++;
-            System.out.println("[PASS]" + name);
+            System.out.println("[PASS] " + name);
         } else {
             failed++;
-            System.out.println("[FAIL]" + name);
+            System.out.println("[FAIL] " + name);
         }
     }
+
 
     public static void main(String[] args) {
         boolean assertsOn = false;
         assert assertsOn = true;
         if (!assertsOn) {
             System.out.println("WARNING: assertions disabled"
-                    + " - re-run with: java -ea PlaylistTest\n");
+                    + " - re-run with: java -ea BoundedStackTest\n");
         }
 
         System.out.println("=== BoundedStack Test Suite ===\n");
 
         testCreators();
-        //testPush();
-        //testPop();
-        //testPeek();
-        //testObservers();
-        //testBoundary();
-        //testException();
+        testPush();
+        testPop();
+        testPeek();
+        testObservers();
+        testProducer();
+        testExposure();
 
         System.out.println("\n=== Summary ===");
         System.out.println("Passed: " + passed);
@@ -51,6 +52,7 @@ public class BoundedStackTest {
             System.exit(1);
         }
     }
+
 
 
     private static void testCreators() {
@@ -67,7 +69,7 @@ public class BoundedStackTest {
 
         //--สร้างสแตกด้วยความจุหนึ่ง--
         BoundedStack stack1 = new BoundedStack(1);
-        check("Create stack with capacity 1", stack1.capacity() == 1);
+        check("Create stack with capacity 1", stack1.getCapacity() == 1);
 
         //--สร้างสแตกด้วยความจุศูนย์ต้องโยน Exception--
         boolean threw0 = false;
@@ -91,193 +93,203 @@ public class BoundedStackTest {
     }
 
     private static void testPush() {
-    System.out.println("\n-- Push --");
+        System.out.println("\n-- Push --");
+            
+        // --เพิ่มข้อมูล 1 ตัวแล้วขนาดต้องเพิ่มเป็น 1--
+        BoundedStack singlePushStack = new BoundedStack(5);
+        singlePushStack.push("LungP");
+        check("Push increases stack size", singlePushStack.size() == 1 );
 
-    //--Push ข้อมูลหนึ่งตัวแล้วขนาดต้องเพิ่มเป็นหนึ่ง--
-    BoundedStack stack = new BoundedStack(3);
-    stack.push("A");
-    check("Push one element increases size to 1",
-            stack.size() == 1);
+        // --เพิ่มข้อมูลแล้ว Stack ต้องไม่ว่าง--
+        BoundedStack nonEmptyStack = new BoundedStack(5);
+        nonEmptyStack.push("Hrk");
+        check("Push makes stack non empty", !nonEmptyStack.isEmpty());
+        
+        // --เพิ่มข้อมูลแล้วข้อมูลบนสุดต้องเป็นข้อมูลล่าสุด--
+        BoundedStack topElementStack = new BoundedStack(5);
+        topElementStack.push("LungP");
+        topElementStack.push("Hrk");
+        check("Push updates top element", topElementStack.peek().equals("Hrk"));
 
-    //--Push ข้อมูลแล้ว Stack ต้องไม่ว่าง--
-    check("Push one element makes stack not empty",
-            !stack.isEmpty());
+        // --เพิ่มข้อมูลหลายตัวต้องเรียงแบบ LIFO--
+        BoundedStack lifoBoundedStack = new BoundedStack(5);
+        lifoBoundedStack.push("A");
+        lifoBoundedStack.push("B");
+        lifoBoundedStack.push("C");
+        boolean lifotest = lifoBoundedStack.pop().equals("C") && lifoBoundedStack.pop().equals("B") 
+        && lifoBoundedStack.pop().equals("A");
+        check("Push maintains LIFO order", lifotest);
 
-    //--Push จนครบความจุแล้ว Stack ต้องเต็ม--
-    stack.push("B");
-    stack.push("C");
-    check("Push until capacity makes stack full",
-            stack.isFull());
-}
-
-
-private static void testPop() {
-    System.out.println("\n-- Pop --");
-
-    //--Pop หลายครั้งต้องคืนข้อมูลย้อนลำดับแบบ LIFO--
-    BoundedStack stack = new BoundedStack(3);
-    stack.push("A");
-    stack.push("B");
-    stack.push("C");
-
-    boolean lifoOrder =
-            stack.pop().equals("C")
-            && stack.pop().equals("B")
-            && stack.pop().equals("A");
-
-    check("Multiple pops return elements in LIFO order",
-            lifoOrder);
-
-    //--Pop จนหมดแล้ว Stack ต้องว่าง--
-    check("Pop all elements makes stack empty",
-            stack.isEmpty());
-
-    //--Pop ตอน Stack ว่างต้องโยน Exception--
-    boolean threwEmpty = false;
-    try {
-        stack.pop();
-    } catch (IllegalArgumentException e) {
-        threwEmpty = true;
-    }
-
-    check("Pop from empty stack throws IllegalArgumentException",
-            threwEmpty);
-
-    //--Pop ที่ไม่สำเร็จต้องไม่เปลี่ยนขนาด--
-    check("Failed pop leaves size unchanged at 0",
-            stack.size() == 0);
-}
-
-
-private static void testPeek() {
-    System.out.println("\n-- Peek --");
-
-    //--Peek ต้องคืนข้อมูลตัวบนสุด--
-    BoundedStack stack = new BoundedStack(3);
-    stack.push("A");
-    stack.push("B");
-    stack.push("C");
-
-    check("Peek returns the top element",
-            stack.peek().equals("C"));
-
-    //--Peek ต้องไม่ลบข้อมูลออกจาก Stack--
-    int beforeSize = stack.size();
-    Object beforeTop = stack.peek();
-
-    check("Peek does not change stack size",
-            stack.size() == beforeSize);
-
-    check("Peek does not remove the top element",
-            stack.peek().equals(beforeTop));
-
-    //--Peek ตอน Stack ว่างต้องโยน Exception--
-    BoundedStack emptyStack = new BoundedStack(3);
-
-    boolean threwEmpty = false;
-    try {
-        emptyStack.peek();
-    } catch (IllegalArgumentException e) {
-        threwEmpty = true;
-    }
-
-    check("Peek from empty stack throws IllegalArgumentException",
-            threwEmpty);
-}
-
-
-private static void testObservers() {
-    System.out.println("\n-- Observers --");
-
-    //--Size ต้องแสดงจำนวนข้อมูลอย่างถูกต้อง--
-    BoundedStack stack = new BoundedStack(3);
-    stack.push("A");
-    stack.push("B");
-
-    check("Size returns the correct number of elements",
-            stack.size() == 2);
-
-    //--isEmpty ต้องเป็น true เมื่อ Stack ว่าง--
-    BoundedStack emptyStack = new BoundedStack(3);
-
-    check("isEmpty returns true for an empty stack",
-            emptyStack.isEmpty());
-
-    //--isEmpty ต้องเป็น false เมื่อมีข้อมูล--
-    check("isEmpty returns false for a non-empty stack",
-            !stack.isEmpty());
-
-    //--isFull ต้องเป็น false ก่อนเต็ม--
-    check("isFull returns false before reaching capacity",
-            !stack.isFull());
-
-    //--isFull ต้องเป็น true เมื่อเต็ม--
-    stack.push("C");
-
-    check("isFull returns true when stack reaches capacity",
-            stack.isFull());
-}
-
-
-private static void testBoundary() {
-    System.out.println("\n-- Boundary --");
-
-    //--Stack ความจุหนึ่งต้องใช้งานได้--
-    BoundedStack oneStack = new BoundedStack(1);
-    oneStack.push("A");
-
-    boolean capacityOneWorks =
-            oneStack.isFull()
-            && oneStack.size() == 1
-            && oneStack.pop().equals("A")
-            && oneStack.isEmpty();
-
-    check("Stack with capacity 1 works correctly",
-            capacityOneWorks);
-
-    //--Push-Pop-Push ต้องใช้งานได้--
-    BoundedStack reuseStack = new BoundedStack(2);
-    reuseStack.push("A");
-    reuseStack.pop();
-    reuseStack.push("B");
-
-    check("Push-pop-push works correctly",
-            reuseStack.size() == 1
-            && reuseStack.peek().equals("B"));
-
-    //--Stack เต็มแล้ว Pop หนึ่งครั้งต้อง Push ใหม่ได้--
-    BoundedStack fullStack = new BoundedStack(2);
-    fullStack.push("A");
-    fullStack.push("B");
-    fullStack.pop();
-    fullStack.push("C");
-
-    check("Full-pop-push works correctly",
-            fullStack.isFull()
-            && fullStack.size() == 2
-            && fullStack.peek().equals("C"));
-}
-
-
-private static void testException() {
-    System.out.println("\n-- Exceptions --");
-
-    //--Push ตอน Stack เต็มต้องโยน Exception--
-    BoundedStack fullStack = new BoundedStack(1);
-    fullStack.push("A");
-
-    boolean threwFull = false;
-    try {
+        // --เพิ่มข้อมูลจนเต็ม--
+        BoundedStack fullStack = new BoundedStack(3);
+        fullStack.push("A");
         fullStack.push("B");
-    } catch (IllegalArgumentException e) {
-        threwFull = true;
+        fullStack.push("C");
+        check("Push fills stack to capacity", fullStack.isFull());
+
+        // --เพิ่มข้อมูลตอนเต็มต้องโยน Exception--
+        BoundedStack overflowStack = new BoundedStack(2);
+        overflowStack.push("A");
+        overflowStack.push("B");
+        boolean threw = false;
+        try {
+            overflowStack.push("C");
+        } catch (IllegalArgumentException e) {
+            threw = true;
+        }
+        check("Push on full stack throws exception", threw);
+    }
+    
+    private static void testPop() {
+        System.out.println("\n-- Pop --");
+
+        BoundedStack s = new BoundedStack(Arrays.asList("A", "B", "C"));
+        check("remove -> returns C", s.pop().equals("C"));
+        check("remove -> size decreases", s.size() == 2);
+        check("remove -> element is gone", !s.contains("C"));
+        check("remove keeps the others in order",
+                s.getElements().equals(Arrays.asList("A", "B")));
+
+        // boundary: ลบจนหมด
+        s.pop();
+        s.pop();
+        check("remove all -> empty", s.size() == 0);
+        boolean threwNull = false;
+        try {
+            s.pop();
+        } catch (IndexOutOfBoundsException e) {
+            threwNull = true;
+        }
+        check("remove on empty list -> throws IndexOutOfBoundsException", threwNull);
     }
 
-    check("Push to full stack throws IllegalArgumentException",
-            threwFull);
+    private static void testPeek() {
+        System.out.println("\n-- Peek --");
 
-    //--Push ที่ไม่สำเร็จต้องไม่เปลี่ยนขนาด--
-    check("Failed push leaves size unchanged",
-            fullStack.size() == 1);
-}
+        //--Peek ต้องคืนข้อมูลตัวบนสุด--
+        BoundedStack stack = new BoundedStack(3);
+        stack.push("A");
+        stack.push("B");
+        stack.push("C");
+
+        check("Peek returns the top element", stack.peek().equals("C"));
+
+        //--Peek ต้องไม่ลบข้อมูลออกจาก Stack--
+        int beforeSize = stack.size();
+        Object beforeTop = stack.peek();
+
+        check("Peek does not change stack size", stack.size() == beforeSize);
+
+        check("Peek does not remove the top element", stack.peek().equals(beforeTop));
+
+        //--Peek ตอน Stack ว่างต้องโยน Exception--
+        BoundedStack emptyStack = new BoundedStack(3);
+
+        boolean threwEmpty = false;
+        try {
+            emptyStack.peek();
+        } catch (IllegalArgumentException e) {
+            threwEmpty = true;
+        }
+
+        check("Peek from empty stack throws IllegalArgumentException", threwEmpty);
+    }
+
+
+ // --- Observer ต้องไม่มี side effect ---
+    private static void testObservers() {
+        System.out.println("\n-- Observers --");
+
+        BoundedStack s = new BoundedStack(Arrays.asList("A", "B"));
+        check("contains finds an existing element", s.contains("A"));
+        check("contains rejects a missing element", !s.contains("Z"));
+
+        boolean threwNullContain = false;
+        try {
+            s.contains(null);
+        } catch (IllegalArgumentException e) {
+            threwNullContain = true;
+        }
+        check("contains(null) -> throws IllegalArgumentException", threwNullContain);
+
+        boolean threwSpecial = false;
+        try {
+            s.contains("ABC@&&");
+        } catch (IllegalArgumentException e) {
+            threwSpecial = true;
+        }
+        check("contains(Special characters) -> throws IllegalArgumentException", threwSpecial);
+
+        BoundedStack n = new BoundedStack(0);
+        boolean threwNull = false;
+        try {
+            n.peek();
+        } catch (IndexOutOfBoundsException e) {
+            threwNull = true;
+        }
+        check("peek() = null -> throws IndexOutOfBoundsException", threwNull);
+    }
+
+    
+    private static void testProducer() {
+        System.out.println("\n-- Producer --");
+
+        BoundedStack original = new BoundedStack(Arrays.asList("A", "B", "C", "D"));
+        BoundedStack shuffled = original.shuffled();
+
+        check("shuffled has the same size", shuffled.size() == original.size());
+
+        List<String> a = new ArrayList<String>(original.getElements());
+        List<String> b = new ArrayList<String>(shuffled.getElements());
+        Collections.sort(a);
+        Collections.sort(b);
+        check("shuffled contains exactly the same elements", a.equals(b));
+
+        check("shuffled does not mutate the original",
+                original.getElements().equals(Arrays.asList("A", "B", "C", "D")));
+
+        // mutate ตัวใหม่ต้องไม่กระทบตัวเดิม
+        shuffled.push("E");
+        check("mutating the result does not affect the original",
+                original.size() == 4);
+
+        // boundary: shuffle ลิสต์ว่างต้องไม่พัง
+        BoundedStack emptyShuffled = new BoundedStack(0).shuffled();
+        check("shuffling an empty list is safe", emptyShuffled.size() == 0);
+    }
+
+    // --- ทดสอบว่าไม่เกิด representation exposure ---
+     private static void testExposure() {
+        System.out.println("\n-- Exposure --");
+
+        // ขาออก: แก้ list ที่ได้จาก getElement() ต้องไม่กระทบ rep
+        BoundedStack s = new BoundedStack(1);
+        s.push("A");
+
+        List<String> got = s.getElements();
+        got.clear();
+        check("clearing result of getElements() does not affect list",
+                s.size() == 1);
+
+        got = s.getElements();
+        got.add("injected");
+        check("adding to result of getElements() does not affect list",
+                s.size() == 1 && !s.contains("injected"));
+
+        // สองครั้งต้องเป็นคนละ object
+        check("getElements() returns a fresh list each call",
+                s.getElements() != s.getElements());
+
+        // ขาเข้า: แก้ list ที่ส่งให้ constructor ต้องไม่กระทบ rep
+        List<String> input = new ArrayList<String>(Arrays.asList("A", "B"));
+        BoundedStack p = new BoundedStack(input);
+
+        input.clear();
+        check("clearing constructor argument does not affect list",
+                p.size() == 2);
+
+        input.add("injected");
+        check("adding to constructor argument does not affect list",
+                !p.contains("injected"));
+    }
 }
