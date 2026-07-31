@@ -128,23 +128,23 @@ public class BoundedStackTest {
     private static void testPop() {
         System.out.println("\n-- Pop --");
         BoundedStack s = new BoundedStack(Arrays.asList("A", "B", "C"));
-        check("remove -> returns C", s.pop().equals("C"));
-        check("remove -> size decreases", s.size() == 2);
-        check("remove -> element is gone", !s.contains("C"));
-        check("remove keeps the others in order",
+        check("Pop returns the top element", s.pop().equals("C"));
+        check("Pop decreases size", s.size() == 2);
+        check("Pop removes the returned element", !s.contains("C"));
+        check("Pop preserves the order ofremaining elements",
                 s.getElements().equals(Arrays.asList("A", "B")));
 
         // boundary: ลบจนหมด
         s.pop();
         s.pop();
-        check("remove all -> empty", s.size() == 0);
+        check("Pop all elements makes stack empty", s.size() == 0);
         boolean threwNull = false;
         try {
             s.pop();
         } catch (IndexOutOfBoundsException e) {
             threwNull = true;
         }
-        check("remove on empty list -> throws IndexOutOfBoundsException", threwNull);
+        check("Pop from empty stackthrows IndexOutOfBoundsException", threwNull);
     }
 
     private static void testPeek() {
