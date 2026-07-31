@@ -6,12 +6,12 @@ import java.util.Set;
 
 /**
  * BoundedStack - ATD แทนรายการชุดข้อความที่ผู้ใช้กรอกเข้ามา
- * 
+ *
  * ค่านามธรรม (A): ลำดับของชุดข้อความ เช่น [แอปเปิ้ล, กล้วย, ส้ม]
- * 
+ *
  * ตัวอย่างการใช้งาน:
- * BoundedStack b = new BoundedStack();
- * b.puch("Bohemian Rhapsody");
+ * BoundedStack b = new BoundedStack(5);
+ * b.push("Bohemian Rhapsody");
  * b.push("Imagine");
  * System.out.println(b.size()); // 2
  */
@@ -56,9 +56,10 @@ public class BoundedStack {
 
     /**
      * สร้างสแตกว่าง
-     * @param capacity
+     *
+     * @param capacity ความจุสูงสุดของสแตก
      */
-    public BoundedStack(int capacity){
+    public BoundedStack(int capacity) {
         if (capacity < 0) {
             throw new IllegalArgumentException("capacity must be non-negative");
         }
@@ -68,9 +69,9 @@ public class BoundedStack {
     }
 
     /**
-     * สร้าง list จากชุดข้อความที่ผู้ใช้ให้มา
-     * 
-     * @param initial รายการชุดข้อความเริ่มต้น, ไม่ซ้ำกัน
+     * สร้าง stack จากรายการข้อความเริ่มต้น
+     *
+     * @param initial รายการชุดข้อความเริ่มต้น ไม่ซ้ำกัน
      * @throws IllegalArgumentException ถ้า initial ผิดเงื่อนไข
      */
     public BoundedStack(List<String> initial) {
@@ -97,19 +98,18 @@ public class BoundedStack {
                 }
             }
         }
-
         this.elements = new ArrayList<>(initial);
         checkRep();
     }
 
-     // ===== Mutators =====
+    // ===== Mutators =====
 
     /**
-     * เพิ่มข้อความตำแหน่งสุดท้ายใน elements
-     * 
-     * @param information ข้อความ, ต้องไม่เป็น null ไม่เป็นสตริงว่าง
-     *                    ไม่เป็นอักษรพิเศษ
-     * @return true ถ้าเพิ่มข้อความสำเร็จ, false ถ้าเพิ่มข้อความไม่สำเร็จ
+     * เพิ่มข้อความลงท้าย stack
+     *
+     * @param information ข้อความต้องไม่เป็น null ไม่เป็นสตริงว่าง
+     *                    และไม่ใช้อักขระพิเศษ
+     * @return true ถ้าเพิ่มข้อความสำเร็จ, false ถ้าไม่สำเร็จ
      * @throws IllegalArgumentException ถ้า information ผิดเงื่อนไข
      */
     public boolean push(String information) {
@@ -126,18 +126,16 @@ public class BoundedStack {
         if (elements.size() >= capacity || elements.contains(information)) {
             return false;
         }
-
         elements.add(information);
         checkRep();
         return true;
     }
 
     /**
-     * ลบข้อความออกจากตำแหน่งสุดท้าย elements และ คืนข้อความตำแหน่งสุดท้าย
-     * 
-     * @return ข้อความตำแหน่งสุดท้าย
-     * @throws IndexOutOfBoundsException ถ้า เมื่อ elements ว่างอยู่
-     *                                   (ไม่มีสมาชิกเลย)
+     * ลบข้อความตัวบนสุดของ stack และคืนค่า
+     *
+     * @return ข้อความตัวบนสุด
+     * @throws IndexOutOfBoundsException ถ้า stack ว่างอยู่
      */
     public String pop() {
         if (elements.isEmpty()) {
@@ -149,12 +147,12 @@ public class BoundedStack {
         return s;
     }
 
-     // ===== Observers =====
+    // ===== Observers =====
 
     /**
-     * คืนจำนวนชุดข้อความใน elements
-     * 
-     * @return จำนวนชุดข้อความใน elements
+     * คืนจำนวนข้อความใน stack
+     *
+     * @return จำนวนข้อความใน stack
      */
     public int size() {
         return elements.size();
@@ -169,20 +167,19 @@ public class BoundedStack {
     }
 
     /**
-     * คืนค่าความจุสูงสุดที่ใช้เก็บข้อความ
-     * 
-     * @return ความจุสูงสุดที่ใช้เก็บข้อความ
+     * คืนค่าความจุสูงสุดของ stack
+     *
+     * @return ความจุสูงสุดของ stack
      */
     public int getCapacity() {
         return this.capacity;
     }
 
-     /**
-     * คืนข้อความตำแหน่งสุดท้าย
-     * 
-     * @return ข้อความตำแหน่งสุดท้าย
-     * @throws IllegalArgumentException ถ้า เมื่อ elements ว่างอยู่
-     *                                   (ไม่มีสมาชิกเลย)
+    /**
+     * คืนข้อความตัวบนสุดของ stack
+     *
+     * @return ข้อความตัวบนสุด
+     * @throws IllegalArgumentException ถ้า stack ว่างอยู่
      */
     public String peek() {
         if (elements.isEmpty()) {
@@ -193,19 +190,19 @@ public class BoundedStack {
 
     /**
      * คืนรายการข้อความทั้งหมดตามลำดับ
-     * 
-     * @return รายการขชุดข้อความตามลำดับ
+     *
+     * @return รายการข้อความตามลำดับ
      */
     public List<String> getElements() {
         return new ArrayList<>(elements);
     }
 
     /**
-     * ตรวจสอบว่ามีข้อความนี้อยู่ใน elements หรือไม่
-     * 
-     * @param information ข้อความ, ต้องไม่เป็น null ไม่เป็นสตริงว่าง
-     *                    ไม่เป็นอักษรพิเศษ
-     * @return true ถ้าพบข้อความ , false ถ้าไม่พบข้อความ
+     * ตรวจสอบว่ามีข้อความนี้อยู่ใน stack หรือไม่
+     *
+     * @param information ข้อความต้องไม่เป็น null ไม่เป็นสตริงว่าง
+     *                    และไม่ใช้อักขระพิเศษ
+     * @return true ถ้าพบข้อความ, false ถ้าไม่พบ
      * @throws IllegalArgumentException ถ้า information ผิดเงื่อนไข
      */
     public boolean contains(String information) {
@@ -221,12 +218,12 @@ public class BoundedStack {
         return elements.contains(information);
     }
 
-     // ===== Producer =====
+    // ===== Producer =====
 
     /**
-     * คืนรายการข้อความใหม่ที่มีชุดข้อความเดิมแต่สลับลำดับ
+     * คืน stack ใหม่ที่มีข้อความเดิมแต่สลับลำดับ
      *
-     * @return รายการชุดข้อความที่สลับลำดับแล้ว
+     * @return stack ที่สลับลำดับแล้ว
      */
     public BoundedStack shuffled() {
         List<String> copy = new ArrayList<String>(elements);
